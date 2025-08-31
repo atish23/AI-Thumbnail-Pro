@@ -257,7 +257,7 @@ export default function App() {
     <div className="min-h-screen bg-background font-sans text-foreground">
       <Header 
         isAuthenticated={isAuthenticated}
-        userEmail="admin@example.com"
+        userEmail={(import.meta as any).env.VITE_ADMIN_EMAIL || "user@example.com"}
         onLogout={handleLogout}
         theme={theme}
         setTheme={setTheme}

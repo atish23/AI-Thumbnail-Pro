@@ -39,9 +39,11 @@
    ```bash
    cp .env.example .env.local
    ```
-   Edit `.env.local` and add your Gemini API key:
+   Edit `.env.local` and add your configuration:
    ```bash
    GEMINI_API_KEY=your_actual_api_key_here
+   VITE_ADMIN_EMAIL=your_admin_email@example.com
+   VITE_ADMIN_PASSWORD=your_secure_password
    ```
 
 4. **Run the development server**

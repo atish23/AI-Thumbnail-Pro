@@ -136,10 +136,14 @@ export async function enhancePrompt(data: QuestionnaireData, numUploadedFiles: n
   if (!data.customPrompt.trim()) {
     return [];
   }
-  if (!process.env.GEMINI_API_KEY) {
+  
+  const apiKey = process.env.GEMINI_API_KEY;
+  console.log('API Key check:', apiKey ? 'Found' : 'Missing', 'Length:', apiKey?.length);
+  
+  if (!apiKey) {
     throw new Error("GEMINI_API_KEY environment variable not set.");
   }
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = new GoogleGenAI({ apiKey: apiKey });
   
   const selectedAspectRatio = 'aspectRatio' in data ? (data as any).aspectRatio : data.aspectRatios[0];
 
@@ -202,8 +206,19 @@ Do not use templates. Create the prompts based on the user's input and the princ
     }
     throw new Error("AI returned an invalid format for prompt suggestions.");
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error enhancing prompt:", error);
-    throw new Error("Failed to enhance prompt. The AI may have returned an unexpected format.");
+    console.error("Error details:", {
+      message: error.message,
+      status: error.status,
+      code: error.code,
+      details: error.details
+    });
+    
+    if (error.message && error.message.includes("API key not valid")) {
+      throw new Error("Invalid API key. Please check your Gemini API key configuration.");
+    }
+    
+    throw new Error(`Failed to enhance prompt: ${error.message || 'Unknown error'}`);
   }
 }

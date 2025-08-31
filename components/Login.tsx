@@ -11,8 +11,11 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Hardcoded credentials
-    if (email === 'admin@example.com' && password === 'password123') {
+    // Check against environment variables
+    const adminEmail = (import.meta as any).env.VITE_ADMIN_EMAIL;
+    const adminPassword = (import.meta as any).env.VITE_ADMIN_PASSWORD;
+    
+    if (email === adminEmail && password === adminPassword) {
       setError('');
       onLoginSuccess();
     } else {
@@ -43,7 +46,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="mt-1 w-full bg-muted border-border text-foreground rounded-lg p-2.5 focus:ring-ring focus:border-ring"
-              placeholder="admin@example.com"
+              placeholder="Enter your email"
             />
           </div>
           <div>
@@ -55,7 +58,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               onChange={(e) => setPassword(e.target.value)}
               required
               className="mt-1 w-full bg-muted border-border text-foreground rounded-lg p-2.5 focus:ring-ring focus:border-ring"
-              placeholder="password123"
+              placeholder="Enter your password"
             />
           </div>
           {error && <p className="text-sm text-primary text-center bg-primary/10 py-2 rounded-md">{error}</p>}

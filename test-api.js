@@ -38,6 +38,8 @@ console.log("🧪 Testing Gemini API Configuration...\n");
 
 // Test 1: Check if API key is set
 console.log("1️⃣ Checking API Key...");
+console.log("Raw API Key:", process.env.GEMINI_API_KEY);
+console.log("API Key length:", process.env.GEMINI_API_KEY?.length);
 if (!API_KEY) {
   console.error("❌ GEMINI_API_KEY not found in environment variables");
   console.log("Please check your .env.local file");

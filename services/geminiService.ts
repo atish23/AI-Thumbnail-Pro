@@ -14,11 +14,14 @@ import type { GenerateContentResponse } from "@google/genai";
  */
 export async function editImage(images: { data: string; mimeType: string }[], prompt: string): Promise<string> {
   // Ensure the API key is available
-  if (!process.env.GEMINI_API_KEY) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  console.log('Gemini Service API Key check:', apiKey ? 'Found' : 'Missing', 'Length:', apiKey?.length);
+  
+  if (!apiKey) {
     throw new Error("GEMINI_API_KEY environment variable not set.");
   }
   
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = new GoogleGenAI({ apiKey: apiKey });
 
   try {
     const imageParts = images.map(image => ({
