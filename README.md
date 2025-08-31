@@ -2,9 +2,9 @@
 
 > Create stunning YouTube thumbnails with AI-powered image editing using Google's Gemini 2.5 Flash
 
-**🚀 [Try it Live](https://ai-thumbnail-pro-2-g2461y0pr-atish-maskes-projects.vercel.app)**
+**🚀 [Try it Live](https://ai-thumbnail-pro-2.vercel.app/)**
 
-![AI Thumbnail Pro Demo](./assets/app-demo.png)
+![AI Thumbnail Pro Demo](./assets/app-demo2.png)
 
 ## ✨ Features
 
