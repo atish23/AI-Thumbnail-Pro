@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF--8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Thumbnail Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+      :root {
+        --color-background: #F9FAFB; /* gray-50 */
+        --color-foreground: #1F2937; /* gray-800 */
+        --color-card: #FFFFFF;
+        --color-card-foreground: #1F2937;
+        --color-popover: #FFFFFF;
+        --color-popover-foreground: #1F2937;
+        --color-primary: #EF4444; /* red-500 */
+        --color-primary-hover: #DC2626; /* red-600 */
+        --color-primary-foreground: #FFFFFF;
+        --color-secondary: #F3F4F6; /* gray-100 */
+        --color-secondary-foreground: #111827; /* gray-900 */
+        --color-muted: #F3F4F6; /* gray-100 */
+        --color-muted-foreground: #6B7280; /* gray-500 */
+        --color-accent: #E5E7EB; /* gray-200 */
+        --color-accent-foreground: #374151; /* gray-700 */
+        --color-border: #E5E7EB; /* gray-200 */
+        --color-input: #E5E7EB; /* gray-200 */
+        --color-ring: #F87171; /* red-400 */
+      }
+      html.dark {
+        --color-background: #121212;
+        --color-foreground: #FFFFFF;
+        --color-card: #282828;
+        --color-card-foreground: #FFFFFF;
+        --color-popover: #282828;
+        --color-popover-foreground: #FFFFFF;
+        --color-primary: #FF0000;
+        --color-primary-hover: #DC2626; /* red-600 */
+        --color-primary-foreground: #FFFFFF;
+        --color-secondary: #374151; /* gray-700 */
+        --color-secondary-foreground: #FFFFFF;
+        --color-muted: #374151; /* gray-700 */
+        --color-muted-foreground: #AAAAAA;
+        --color-accent: #4B5563; /* gray-600 */
+        --color-accent-foreground: #F9FAFB; /* gray-50 */
+        --color-border: #4B5563; /* gray-600 */
+        --color-input: #4B5563; /* gray-600 */
+        --color-ring: #FF0000;
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              border: 'var(--color-border)',
+              input: 'var(--color-input)',
+              ring: 'var(--color-ring)',
+              background: 'var(--color-background)',
+              foreground: 'var(--color-foreground)',
+              primary: {
+                DEFAULT: 'var(--color-primary)',
+                hover: 'var(--color-primary-hover)',
+                foreground: 'var(--color-primary-foreground)',
+              },
+              secondary: {
+                DEFAULT: 'var(--color-secondary)',
+                foreground: 'var(--color-secondary-foreground)',
+              },
+              muted: {
+                DEFAULT: 'var(--color-muted)',
+                foreground: 'var(--color-muted-foreground)',
+              },
+              accent: {
+                DEFAULT: 'var(--color-accent)',
+                foreground: 'var(--color-accent-foreground)',
+              },
+              popover: {
+                DEFAULT: 'var(--color-popover)',
+                foreground: 'var(--color-popover-foreground)',
+              },
+              card: {
+                DEFAULT: 'var(--color-card)',
+                foreground: 'var(--color-card-foreground)',
+              },
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            aspectRatio: {
+              '16/9': '16 / 9',
+              '9/16': '9 / 16',
+              '1/1': '1 / 1',
+            },
+          },
+        },
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.16.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-background text-foreground">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
