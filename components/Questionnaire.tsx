@@ -32,11 +32,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onSubmit, disabled
   });
   
   useEffect(() => {
-    const newFormData: Partial<QuestionnaireData> = { proMode };
-    if (!proMode) {
-      newFormData.aspectRatios = [ASPECT_RATIOS[0].value];
-    }
-    setFormData(prev => ({ ...prev, ...newFormData }));
+    setFormData(prev => ({ ...prev, proMode }));
   }, [proMode]);
 
   useEffect(() => {
@@ -100,19 +96,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onSubmit, disabled
   }
   
   const handleAspectRatioChange = (value: string) => {
-    setFormData(prev => {
-        const currentRatios = prev.aspectRatios || [];
-        const newRatios = currentRatios.includes(value)
-            ? currentRatios.filter(r => r !== value)
-            : [...currentRatios, value];
-        
-        // Don't allow removing the last one.
-        if (newRatios.length === 0) {
-            return prev;
-        }
-
-        return { ...prev, aspectRatios: newRatios };
-    });
+    setFormData(prev => ({ ...prev, aspectRatios: [value] }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -199,6 +183,23 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onSubmit, disabled
             <label htmlFor="customText" className="block text-sm font-medium text-muted-foreground mb-2">Custom Text Overlay (Optional)</label>
             <input type="text" id="customText" name="customText" value={formData.customText} onChange={handleChange} placeholder="e.g., 'INSANE New Gadget!'" className="w-full bg-muted border-border text-foreground rounded-lg p-2.5 focus:ring-ring focus:border-ring" />
         </div>
+
+        <div>
+          <label className="block text-sm font-medium text-muted-foreground mb-2">Aspect Ratio</label>
+          <div className="grid grid-cols-2 gap-2">
+            {ASPECT_RATIOS.map(ratio => (
+              <button 
+                type="button" 
+                key={ratio.value} 
+                onClick={() => handleAspectRatioChange(ratio.value)} 
+                className={`p-2 rounded-lg text-sm transition-colors ${formData.aspectRatios.includes(ratio.value) ? 'bg-primary text-primary-foreground font-semibold' : 'bg-muted hover:bg-accent'}`}
+              >
+                {ratio.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">Choose one aspect ratio for your thumbnail</p>
+        </div>
         
         <div className="border-t border-border pt-4">
           <div className="flex items-center justify-between">
@@ -216,22 +217,6 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onSubmit, disabled
 
         {proMode && (
           <div className="space-y-4 border-t border-primary/20 pt-4">
-             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-2">Aspect Ratio(s)</label>
-              <div className="grid grid-cols-2 gap-2">
-                {ASPECT_RATIOS.map(ratio => (
-                  <button 
-                    type="button" 
-                    key={ratio.value} 
-                    onClick={() => handleAspectRatioChange(ratio.value)} 
-                    className={`p-2 rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${formData.aspectRatios.includes(ratio.value) ? 'bg-primary text-primary-foreground font-semibold' : 'bg-muted hover:bg-accent'}`}
-                    disabled={formData.aspectRatios.length === 1 && formData.aspectRatios.includes(ratio.value)}
-                  >
-                    {ratio.label}
-                  </button>
-                ))}
-              </div>
-            </div>
             <div>
               <label htmlFor="customPrompt" className="block text-sm font-medium text-muted-foreground">Custom AI Prompt (Optional)</label>
               <textarea id="customPrompt" name="customPrompt" value={formData.customPrompt} onChange={handleChange} rows={3} placeholder="e.g., A futuristic robot on Mars, cyberpunk style, cinematic lighting..." className="w-full bg-muted border-border text-foreground rounded-lg p-2.5 focus:ring-ring focus:border-ring" />

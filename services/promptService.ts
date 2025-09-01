@@ -88,7 +88,7 @@ STYLE GUIDELINES: ARTISTIC & CREATIVE
   }
 
   prompt += `
-CRITICAL REQUIREMENT: The final output image's aspect ratio MUST BE EXACTLY ${selectedAspectRatio}. You must crop, expand the background, or use generative fill to achieve this precise aspect ratio. Do not stretch or distort the main subject.
+CRITICAL REQUIREMENT: The uploaded image has already been preprocessed to the exact ${selectedAspectRatio} aspect ratio. Focus on enhancing the visual elements, style, and composition without changing the aspect ratio or dimensions.
 
 NON-NEGOTIABLE PLACEMENT: The main subject (the person or key focus) from the first photo MUST be positioned on the "${data.placement}" side of the thumbnail. This is the most important rule. For example, if placement is "Left", the subject must occupy the left third of the frame, leaving the other two-thirds more open.
 

@@ -6,7 +6,7 @@ import { Questionnaire } from './components/Questionnaire';
 import { ThumbnailCard } from './components/ThumbnailCard';
 import { Loader } from './components/Loader';
 import { Thumbnail, QuestionnaireData, ChatMessage } from './types';
-import { fileToBase64, downloadAllAsZip } from './services/imageService';
+import { fileToBase64, downloadAllAsZip, processImagesForAspectRatio } from './services/imageService';
 import { rewritePrompt } from './services/promptService';
 import { editImage } from './services/geminiService';
 import { DownloadIcon } from './components/Icons';
@@ -100,7 +100,7 @@ export default function App() {
       return;
     }
     if (data.aspectRatios.length === 0) {
-        setError('Please select at least one aspect ratio.');
+        setError('Please select an aspect ratio.');
         return;
     }
 
@@ -115,65 +115,52 @@ export default function App() {
     const sourceFiles = uploadedFiles;
 
     try {
+      // Get the selected aspect ratio (only one now)
+      const selectedAspectRatio = data.aspectRatios[0];
+      console.log(`Processing images for ${selectedAspectRatio} aspect ratio...`);
+      
+      // Preprocess images to the selected aspect ratio
+      const processedFiles = await processImagesForAspectRatio(sourceFiles, selectedAspectRatio);
+      
       const imageDatas = await Promise.all(
-        sourceFiles.map(async (file) => ({
+        processedFiles.map(async (file) => ({
           data: await fileToBase64(file),
           mimeType: file.type,
         }))
       );
-      const fileNames = sourceFiles.map(f => f.name);
-      
+      const fileNames = processedFiles.map(f => f.name);
+
       const generationTasks: Promise<{ imageBase64: string; style: string; aspectRatio: string; }>[] = [];
       const useEnhancedPrompts = data.proMode && data.enhancedPrompts && data.enhancedPrompts.length > 0;
 
       if (useEnhancedPrompts) {
         const prompts = data.enhancedPrompts!;
-        if (data.aspectRatios.includes('16/9')) {
-            prompts.slice(0, 3).forEach((customPrompt, index) => {
-                const task = (async () => {
-                    const taskData = { ...data, customPrompt, aspectRatio: '16/9' };
-                    const promptPayload = rewritePrompt(taskData, fileNames);
-                    const imageBase64 = await editImage(imageDatas, promptPayload);
-                    return { imageBase64, style: `AI Idea ${index + 1}`, aspectRatio: '16/9' };
-                })();
-                generationTasks.push(task);
-            });
-        }
-        if (data.aspectRatios.includes('9/16')) {
-            const task = (async () => {
-                const taskData = { ...data, customPrompt: prompts[0], aspectRatio: '9/16' };
-                const promptPayload = rewritePrompt(taskData, fileNames);
-                const imageBase64 = await editImage(imageDatas, promptPayload);
-                return { imageBase64, style: `AI Idea 1`, aspectRatio: '9/16' };
-            })();
-            generationTasks.push(task);
-        }
+        // Generate up to 3 variations with enhanced prompts
+        prompts.slice(0, 3).forEach((customPrompt, index) => {
+          const task = (async () => {
+            const taskData = { ...data, customPrompt, aspectRatio: selectedAspectRatio };
+            const promptPayload = rewritePrompt(taskData, fileNames);
+            const imageBase64 = await editImage(imageDatas, promptPayload);
+            return { imageBase64, style: `AI Idea ${index + 1}`, aspectRatio: selectedAspectRatio };
+          })();
+          generationTasks.push(task);
+        });
       } else {
-          const userStyle = data.style;
-          const otherStyles = THUMBNAIL_STYLES.filter(s => s !== userStyle);
-          const shuffledOtherStyles = otherStyles.sort(() => 0.5 - Math.random());
-          const stylesToGenerate = [userStyle, ...shuffledOtherStyles.slice(0, 2)];
+        // Generate with different styles
+        const userStyle = data.style;
+        const otherStyles = THUMBNAIL_STYLES.filter(s => s !== userStyle);
+        const shuffledOtherStyles = otherStyles.sort(() => 0.5 - Math.random());
+        const stylesToGenerate = [userStyle, ...shuffledOtherStyles.slice(0, 2)];
 
-          if (data.aspectRatios.includes('16/9')) {
-              stylesToGenerate.forEach(style => {
-                  const task = (async () => {
-                      const taskData = { ...data, style, aspectRatio: '16/9' };
-                      const prompt = rewritePrompt(taskData, fileNames);
-                      const imageBase64 = await editImage(imageDatas, prompt);
-                      return { imageBase64, style, aspectRatio: '16/9' };
-                  })();
-                  generationTasks.push(task);
-              });
-          }
-          if (data.aspectRatios.includes('9/16')) {
-              const task = (async () => {
-                  const taskData = { ...data, style: userStyle, aspectRatio: '9/16' };
-                  const prompt = rewritePrompt(taskData, fileNames);
-                  const imageBase64 = await editImage(imageDatas, prompt);
-                  return { imageBase64, style: userStyle, aspectRatio: '9/16' };
-              })();
-              generationTasks.push(task);
-          }
+        stylesToGenerate.forEach(style => {
+          const task = (async () => {
+            const taskData = { ...data, style, aspectRatio: selectedAspectRatio };
+            const prompt = rewritePrompt(taskData, fileNames);
+            const imageBase64 = await editImage(imageDatas, prompt);
+            return { imageBase64, style, aspectRatio: selectedAspectRatio };
+          })();
+          generationTasks.push(task);
+        });
       }
       
       const results = await Promise.all(generationTasks);
@@ -183,7 +170,7 @@ export default function App() {
           id: `thumb-${result.style.replace(/\s/g, '')}-${result.aspectRatio.replace('/',':')}-${Date.now()}-${index}`,
           imageDataUrl: `data:image/png;base64,${result.imageBase64}`,
           format: `${result.style} (${result.aspectRatio})`,
-          aspectRatio: result.aspectRatio as '16/9' | '9/16',
+          aspectRatio: result.aspectRatio as '16/9' | '9/16' | '1/1' | '4/3' | '3/4',
         };
       });
       
